@@ -54,9 +54,9 @@ defmodule Day01Spec do
     end
   end
 
-  xexample "Run against prod data to get final answer" do
-    Day01.run
-  end
+  # xexample "Run against prod data to get final answer" do
+  #   Day01.run
+  # end
 
 
 end
