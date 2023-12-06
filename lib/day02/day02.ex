@@ -69,7 +69,7 @@ defmodule Day02 do
   end
 
   def cubes_required_for(game_line) do
-    {game_number, handfuls} = parse_game_line(game_line)
+    {_game_number, handfuls} = parse_game_line(game_line)
     %{
       blue: max_value_for_key(handfuls, :blue),
       red: max_value_for_key(handfuls, :red),
