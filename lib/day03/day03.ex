@@ -1,5 +1,5 @@
 defmodule Day03Chunk do
-  defstruct type: nil, start: nil, stop: nil, text: nil, line_number: nil, gear: nil
+  defstruct [:type, :start, :stop, :text, :line_number, :gear]
 end
 
 defmodule Day03 do
@@ -90,7 +90,6 @@ defmodule Day03 do
     |> elem(0) # the accumulator
     |> Enum.uniq
     |> Enum.map(fn chunk -> String.to_integer(chunk.text) end)
-    # |> Enum.map(&String.to_integer/1)
     |> Enum.sort
   end
 
