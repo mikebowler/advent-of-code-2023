@@ -10,9 +10,9 @@ defmodule Day03Spec do
     it "should tag all the chunks" do
       Day03.prepare_line(1, "..35..633.+")
       |> to(eql([
-          {:digit, 2, 3, "35", 1}, 
-          {:digit, 6, 8, "633", 1}, 
-          {:symbol, 10, 10, "+", 1}
+          %Day03Chunk{type: :digit, start: 2, stop: 3, text: "35", line_number: 1}, 
+          %Day03Chunk{type: :digit, start: 6, stop: 8, text: "633", line_number: 1}, 
+          %Day03Chunk{type: :symbol, start: 10, stop: 10, text: "+", line_number: 1}
         ]))
     end
 
@@ -39,7 +39,7 @@ defmodule Day03Spec do
       a = Day03.prepare_line(1, "..a.")
       b = Day03.prepare_line(1, "..35")
       Day03.compare_two_prepared_lines(a,b)
-      |> Enum.map(fn {_type, _start, _stop, chunk, _line_number} -> String.to_integer(chunk) end)
+      |> Enum.map(fn chunk -> String.to_integer(chunk.text) end)
       |> to(eql([35]))
     end
 
@@ -47,7 +47,7 @@ defmodule Day03Spec do
       a = Day03.prepare_line(1, ".a..")
       b = Day03.prepare_line(1, "..35")
       Day03.compare_two_prepared_lines(a,b)
-      |> Enum.map(fn {_type, _start, _stop, chunk, _line_number} -> String.to_integer(chunk) end)
+      |> Enum.map(fn chunk -> String.to_integer(chunk.text) end)
       |> to(eql([35]))
     end
 
@@ -55,7 +55,7 @@ defmodule Day03Spec do
       a = Day03.prepare_line(1, "....x")
       b = Day03.prepare_line(1, "..35.")
       Day03.compare_two_prepared_lines(a,b)
-      |> Enum.map(fn {_type, _start, _stop, chunk, _line_number} -> String.to_integer(chunk) end)
+      |> Enum.map(fn chunk -> String.to_integer(chunk.text) end)
       |> to(eql([35]))
     end
 
@@ -63,7 +63,7 @@ defmodule Day03Spec do
       a = Day03.prepare_line(1, "..x.x")
       b = Day03.prepare_line(1, "..35.")
       Day03.compare_two_prepared_lines(a,b)
-      |> Enum.map(fn {_type, _start, _stop, chunk, _line_number} -> String.to_integer(chunk) end)
+      |> Enum.map(fn chunk -> String.to_integer(chunk.text) end)
       |> to(eql([35]))
     end
 
@@ -76,17 +76,35 @@ defmodule Day03Spec do
   end  
 
   context "part 2" do
+    # it "should find all gears" do
+    #   schematic = """
+    #     467..114..
+    #     ...*......
+    #     ..35..633.
+    #     ......#...
+    #     617*......
+    #     .....+.58.
+    #     ..592.....
+    #     ......755.
+    #     ...$.*....
+    #     .664.598..
+    #     """
+    #     Day03.find_gears(schematic)
+    #     |> Enum.sort
+    #     |> to(eql([{35,467}, {598, 755}]))
+ 
+    # end
   end
 
   context "running against prod data" do
-    example "Part 1" do
-      {:ok, schematic} = File.read("lib/day03/data.txt")
-      Day03.find_part_numbers(schematic)
-      |> Enum.sort
-      |> Enum.sum
-      |> to(eql(546563))
-      # IO.puts("part1: #{total}")
-    end
+    # example "Part 1" do
+    #   {:ok, schematic} = File.read("lib/day03/data.txt")
+    #   Day03.find_part_numbers(schematic)
+    #   |> Enum.sort
+    #   |> Enum.sum
+    #   |> to(eql(546563))
+    #   # IO.puts("part1: #{total}")
+    # end
 
     # example "Part 2" do
     #   Day03.run_part2

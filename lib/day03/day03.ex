@@ -1,3 +1,7 @@
+defmodule Day03Chunk do
+  defstruct type: nil, start: nil, stop: nil, text: nil, line_number: nil, gear: nil
+end
+
 defmodule Day03 do
   def run_part1 do
   end
@@ -37,23 +41,26 @@ defmodule Day03 do
     |> Enum.reduce([], fn chunk, acc ->
       type = type_of(String.first(chunk))
       if Enum.empty?(acc) do
-        [{type, 0, String.length(chunk) - 1, chunk, line_number} | acc]
+        [%Day03Chunk{type: type, start: 0, stop: String.length(chunk) - 1, text: chunk, line_number: line_number} | acc]
+        # [{type, 0, String.length(chunk) - 1, chunk, line_number} | acc]
       else
-        {_type, _start, stop, _text, _line_number} = List.first(acc)
-        [{type, stop + 1, stop + String.length(chunk), chunk, line_number} | acc]
+        stop = List.first(acc).stop
+        # {_type, _start, stop, _text, _line_number} = List.first(acc)
+        [%Day03Chunk{type: type, start: stop + 1, stop: stop + String.length(chunk), text: chunk, line_number: line_number} | acc]
+        # [{type, stop + 1, stop + String.length(chunk), chunk, line_number} | acc]
       end
     end)
     |> Enum.reverse
-    |> Enum.filter(fn {type, _start, _stop, _chunk, _line_number} -> type != :none end)
+    |> Enum.filter(fn chunk -> chunk.type != :none end)
   end
 
   # See if anything on second is affected by first. Return any part numbers. 
   def compare_two_prepared_lines(first, second) do
     second
-    |> Enum.filter(fn {type, _start, _stop, _chunk, _line_number} -> type == :digit end)
-    |> Enum.map(fn {type, start, stop, chunk, line_number} ->
-      if any_symbols_adjacent?(start, stop, first) || any_symbols_adjacent?(start, stop, second) do
-        {type, start, stop, chunk, line_number}
+    |> Enum.filter(fn chunk -> chunk.type == :digit end)
+    |> Enum.map(fn chunk ->
+      if any_symbols_adjacent?(chunk.start, chunk.stop, first) || any_symbols_adjacent?(chunk.start, chunk.stop, second) do
+        chunk # %Day03Chunk{type: chunk.type, start: chunk.start, stop: chunk.stop, text: chunk.chunk, line_number: chunk.line_number}
       else
         :none
       end
@@ -63,9 +70,9 @@ defmodule Day03 do
 
   def any_symbols_adjacent?(number_start, number_stop, prepared_line) do
     prepared_line
-    |> Enum.filter(fn {type, _start, _stop, _chunk, _line_number} -> type == :symbol end)
-    |> Enum.any?(fn {_type, symbol_start, _stop, _chunk, _line_number} ->
-      symbol_start >= (number_start - 1) && symbol_start <= (number_stop + 1)
+    |> Enum.filter(fn chunk -> chunk.type == :symbol end)
+    |> Enum.any?(fn symbol_chunk ->
+      symbol_chunk.start >= (number_start - 1) && symbol_chunk.start <= (number_stop + 1)
     end)
   end
 
@@ -84,7 +91,7 @@ defmodule Day03 do
     end)
     |> elem(0) # the accumulator
     |> Enum.uniq
-    |> Enum.map(fn {_type, _start, _stop, chunk, _line_number} -> String.to_integer(chunk) end)
+    |> Enum.map(fn chunk -> String.to_integer(chunk.text) end)
     # |> Enum.map(&String.to_integer/1)
     |> Enum.sort
   end
