@@ -38,16 +38,13 @@ defmodule Day03 do
 
   def prepare_line(line_number, line) do
     chunk_line(line)
-    |> Enum.reduce([], fn chunk, acc ->
-      type = type_of(String.first(chunk))
+    |> Enum.reduce([], fn text, acc ->
+      type = type_of(String.first(text))
       if Enum.empty?(acc) do
-        [%Day03Chunk{type: type, start: 0, stop: String.length(chunk) - 1, text: chunk, line_number: line_number} | acc]
-        # [{type, 0, String.length(chunk) - 1, chunk, line_number} | acc]
+        [%Day03Chunk{type: type, start: 0, stop: String.length(text) - 1, text: text, line_number: line_number} | acc]
       else
         stop = List.first(acc).stop
-        # {_type, _start, stop, _text, _line_number} = List.first(acc)
-        [%Day03Chunk{type: type, start: stop + 1, stop: stop + String.length(chunk), text: chunk, line_number: line_number} | acc]
-        # [{type, stop + 1, stop + String.length(chunk), chunk, line_number} | acc]
+        [%Day03Chunk{type: type, start: stop + 1, stop: stop + String.length(text), text: text, line_number: line_number} | acc]
       end
     end)
     |> Enum.reverse
@@ -60,7 +57,7 @@ defmodule Day03 do
     |> Enum.filter(fn chunk -> chunk.type == :digit end)
     |> Enum.map(fn chunk ->
       if any_symbols_adjacent?(chunk.start, chunk.stop, first) || any_symbols_adjacent?(chunk.start, chunk.stop, second) do
-        chunk # %Day03Chunk{type: chunk.type, start: chunk.start, stop: chunk.stop, text: chunk.chunk, line_number: chunk.line_number}
+        chunk
       else
         :none
       end
@@ -84,7 +81,8 @@ defmodule Day03 do
     |> Enum.map(fn {line, line_number} -> prepare_line(line_number, line) end)
     |> Enum.reduce({[], []}, fn prepared_line, acc ->
       {all_parts, last_line} = acc
-      { compare_two_prepared_lines(prepared_line, last_line) ++
+      { 
+        compare_two_prepared_lines(prepared_line, last_line) ++
         compare_two_prepared_lines(last_line, prepared_line) ++
         all_parts, prepared_line
       }

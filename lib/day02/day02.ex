@@ -49,7 +49,7 @@ defmodule Day02 do
   def parse_handful_line(line) do
     scores = line
     |> String.split(", ")
-    |> Enum.map( fn chunk -> 
+    |> Enum.map(fn chunk ->
       [score, label] = String.split(chunk, " ")
       {String.to_atom(label), String.to_integer(score)}
     end )
