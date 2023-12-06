@@ -1,9 +1,10 @@
 defmodule Day03Chunk do
-  defstruct [:type, :start, :stop, :text, :line_number, :gear]
+  defstruct [:type, :start, :stop, :text, :line_number, :gears]
 end
 
 defmodule Day03 do
-  def run_part1 do
+  defp not_none(x) do
+    x != :none
   end
 
   defp type_of(element) do
@@ -56,25 +57,31 @@ defmodule Day03 do
     second
     |> Enum.filter(fn chunk -> chunk.type == :digit end)
     |> Enum.map(fn chunk ->
-      if any_symbols_adjacent?(chunk.start, chunk.stop, first) || any_symbols_adjacent?(chunk.start, chunk.stop, second) do
-        chunk
+      adjacent_symbols = symbols_adjacent(chunk.start, chunk.stop, first) ++ symbols_adjacent(chunk.start, chunk.stop, second)
+      if Enum.empty?(adjacent_symbols) do
+        :none
+      else
+        # Add any gears to the chunk
+        %{chunk | gears: adjacent_symbols |> Enum.filter(fn x -> x.text == "*" end)}
+      end
+    end)
+    |> Enum.filter(&not_none/1)
+  end
+
+  def symbols_adjacent(number_start, number_stop, prepared_line) do
+    prepared_line
+    |> Enum.filter(fn chunk -> chunk.type == :symbol end)
+    |> Enum.map(fn symbol_chunk ->
+      if symbol_chunk.start >= (number_start - 1) && symbol_chunk.start <= (number_stop + 1) do
+        symbol_chunk
       else
         :none
       end
     end)
-    |> Enum.filter(fn x -> x != :none end)
+    |> Enum.filter(&not_none/1)
   end
 
-  def any_symbols_adjacent?(number_start, number_stop, prepared_line) do
-    prepared_line
-    |> Enum.filter(fn chunk -> chunk.type == :symbol end)
-    |> Enum.any?(fn symbol_chunk ->
-      symbol_chunk.start >= (number_start - 1) && symbol_chunk.start <= (number_stop + 1)
-    end)
-  end
-
-  def find_part_numbers(schematic) do
-    # A part number is any number adjacent to a symbol
+  defp process_schematic(schematic) do
     schematic
     |> String.split("\n", trim: true)
     |> Stream.with_index
@@ -89,9 +96,27 @@ defmodule Day03 do
     end)
     |> elem(0) # the accumulator
     |> Enum.uniq
+  end
+
+  def find_part_numbers(schematic) do
+    process_schematic(schematic)
     |> Enum.map(fn chunk -> String.to_integer(chunk.text) end)
     |> Enum.sort
   end
 
+  def find_gears(schematic) do
+    process_schematic(schematic)
+    |> Enum.filter(fn chunk -> Enum.empty?(chunk.gears) == false end)
+    |> Enum.map(fn number_chunk -> for gear <- number_chunk.gears, do: {number_chunk, gear} end)# comprehensions)
+    |> List.flatten
+    |> Enum.group_by(
+      fn {_number_chunk, gear_chunk} -> gear_chunk end,
+      fn {number_chunk, _gear_chunk} -> number_chunk end
+    )
+    |> Enum.filter(fn {_gear_chunk, number_chunks} -> length(number_chunks) == 2 end)
+    |> Enum.map(fn {_gear_chunk, number_chunks} ->
+      Enum.map(number_chunks, fn number_chunk -> String.to_integer(number_chunk.text) end)
+    end)
+  end
 end
 

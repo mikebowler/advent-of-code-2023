@@ -76,39 +76,42 @@ defmodule Day03Spec do
   end  
 
   context "part 2" do
-    # it "should find all gears" do
-    #   schematic = """
-    #     467..114..
-    #     ...*......
-    #     ..35..633.
-    #     ......#...
-    #     617*......
-    #     .....+.58.
-    #     ..592.....
-    #     ......755.
-    #     ...$.*....
-    #     .664.598..
-    #     """
-    #     Day03.find_gears(schematic)
-    #     |> Enum.sort
-    #     |> to(eql([{35,467}, {598, 755}]))
- 
-    # end
+    it "should find all gears" do
+      schematic = """
+        467..114..
+        ...*......
+        ..35..633.
+        ......#...
+        617*......
+        .....+.58.
+        ..592.....
+        ......755.
+        ...$.*....
+        .664.598..
+        """
+        Day03.find_gears(schematic)
+        |> tap(fn x -> IO.inspect(x) end)
+        |> Enum.map(fn [a, b] -> a * b end)
+        |> Enum.sum
+        |> to(eql(467835))
+    end
   end
 
   context "running against prod data" do
-    # example "Part 1" do
-    #   {:ok, schematic} = File.read("lib/day03/data.txt")
-    #   Day03.find_part_numbers(schematic)
-    #   |> Enum.sort
-    #   |> Enum.sum
-    #   |> to(eql(546563))
-    #   # IO.puts("part1: #{total}")
-    # end
+    example "Part 1" do
+      {:ok, schematic} = File.read("lib/day03/data.txt")
+      Day03.find_part_numbers(schematic)
+      |> Enum.sort
+      |> Enum.sum
+      |> to(eql(546563))
+    end
 
-    # example "Part 2" do
-    #   Day03.run_part2
-    #   |> to(eql(49710))
-    # end
+    example "Part 2" do
+      {:ok, schematic} = File.read("lib/day03/data.txt")
+      Day03.find_gears(schematic)
+        |> Enum.map(fn [a, b] -> a * b end)
+        |> Enum.sum
+        |> to(eql(91031374))
+    end
   end 
 end
