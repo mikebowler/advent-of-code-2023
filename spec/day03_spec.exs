@@ -90,7 +90,7 @@ defmodule Day03Spec do
         .664.598..
         """
         Day03.find_gears(schematic)
-        |> tap(fn x -> IO.inspect(x) end)
+        # |> tap(fn x -> IO.inspect(x) end)
         |> Enum.map(fn [a, b] -> a * b end)
         |> Enum.sum
         |> to(eql(467835))
