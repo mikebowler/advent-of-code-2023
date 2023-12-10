@@ -41,14 +41,8 @@ defmodule Day04 do
     |> Enum.sum
   end
 
-  def make_copies([]) do
-    []
-  end
-
   def expand_all_lines(lines) do
-    cards = lines
-    |> Enum.map(&Day04Card.new/1)
-
+    cards = lines |> Enum.map(&Day04Card.new/1)
     acc = for card <- cards, into: %{}, do: {card.id, 1}
     expand(cards, acc)
   end
@@ -58,12 +52,13 @@ defmodule Day04 do
   end
 
   # The acc is a map of index => quantity values
-  # Each card, with a quantity of one has already been loaded before this is called the first time
   def expand(cards, acc) do
-    current_card = hd cards
-    quantity_of_tail = length(Day04Card.matching_cards(current_card))
-    cards_to_copy = Enum.take(tl(cards), quantity_of_tail)
-    acc2 = for card <- cards_to_copy, into: %{}, do: {card.id, acc[card.id] + acc[current_card.id]}
-    expand((tl cards), Map.merge(acc,acc2, fn _k, v1, v2 -> max(v1, v2) end))
+    top_card = hd cards
+    remaining_cards = tl cards
+
+    cards_to_copy = Enum.take(tl(cards), length(Day04Card.matching_cards(top_card)))
+    adjusted_quantities = for card <- cards_to_copy, into: %{}, do: {card.id, acc[card.id] + acc[top_card.id]}
+
+    expand(remaining_cards, Map.merge(acc, adjusted_quantities, fn _k, v1, v2 -> max(v1, v2) end))
   end
 end
