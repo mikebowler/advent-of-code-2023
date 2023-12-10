@@ -52,7 +52,6 @@ defmodule Day04Spec do
         """
       |> String.split("\n", trim: true)
       |> Day04.expand_all_lines
-      # |> to(eql(%{1 => 1, 2 => 2, 3 => 4, 4 => 8, 5 => 14, 6 => 1}))
       |> Enum.map(fn {_id, count} -> count end)
       |> Enum.sum
       |> to(eql(30))
